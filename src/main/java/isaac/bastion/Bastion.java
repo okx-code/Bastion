@@ -1,5 +1,7 @@
 package isaac.bastion;
 
+import isaac.bastion.commands.BastionDeleteListCommand;
+import isaac.bastion.storage.BastionLogStorage;
 import java.util.LinkedList;
 
 import isaac.bastion.commands.BastionListCommand;
@@ -28,6 +30,7 @@ public final class Bastion extends ACivMod {
 	private static BastionBlockManager blockManager;
 	private static BastionGroupStorage groupStorage;
 	private static BastionGroupManager groupManager;
+	private static BastionLogStorage logStorage;
 	private static CommonSettings commonSettings;
 
 	public void onEnable() 	{
@@ -41,24 +44,24 @@ public final class Bastion extends ACivMod {
 		registerNameLayerPermissions();
 		blockManager = new BastionBlockManager();
 		groupManager = new BastionGroupManager(this.groupStorage);
-		
+
 		if(!this.isEnabled()) //check that the plugin was not disabled in setting up any of the static variables
 			return;
-		
+
 		BastionType.startRegenAndErosionTasks();
 		registerListeners();
 		setupCommands();
 	}
-	
+
 	public void onDisable() {
 		blockStorage.close();
 		groupStorage.close();
 	}
-	
+
 	public String getPluginName() {
 		return "Bastion";
 	}
-	
+
 	private void registerListeners() {
 		getLogger().log(Level.INFO, "Registering Listeners");
 		getServer().getPluginManager().registerEvents(new BastionDamageListener(), this);
@@ -67,6 +70,7 @@ public final class Bastion extends ACivMod {
 		getServer().getPluginManager().registerEvents(new BastionBreakListener(blockStorage, blockManager), this);
 		getServer().getPluginManager().registerEvents(new NameLayerListener(blockStorage), this);
 		getServer().getPluginManager().registerEvents(new CitadelListener(), this);
+		getServer().getPluginManager().registerEvents(new JoinNotifyDeleteListener(), this);
 	}
 
 	private void setupDatabase() {
@@ -97,6 +101,8 @@ public final class Bastion extends ACivMod {
 			return;
 		}
 
+		logStorage = new BastionLogStorage(db, getLogger());
+
 		blockStorage = new BastionBlockStorage(db, getLogger());
 		blockStorage.loadBastions();
 		getLogger().log(Level.INFO, "All Bastions loaded");
@@ -104,8 +110,9 @@ public final class Bastion extends ACivMod {
 		groupStorage = new BastionGroupStorage(db, getLogger());
 		groupStorage.loadGroups();
 	}
-	
+
 	//Sets up the command managers
+
 	private void setupCommands(){
 		getCommand("Bastion").setExecutor(new BastionCommandManager());
 		getCommand("bsi").setExecutor(new ModeChangeCommand(Mode.INFO));
@@ -118,12 +125,16 @@ public final class Bastion extends ACivMod {
 		getCommand("bsga").setExecutor(new GroupCommandManager(GroupCommandManager.CommandType.Add));
 		getCommand("bsgd").setExecutor(new GroupCommandManager(GroupCommandManager.CommandType.Delete));
 		getCommand("bsgl").setExecutor(new GroupCommandManager(GroupCommandManager.CommandType.List));
+		getCommand("bdl").setExecutor(new BastionDeleteListCommand());
 	}
-
 	public static Bastion getPlugin() {
 		return plugin;
 	}
-	
+
+	public static BastionLogStorage getBastionLog() {
+		return logStorage;
+	}
+
 	public static BastionBlockManager getBastionManager() {
 		return blockManager;
 	}

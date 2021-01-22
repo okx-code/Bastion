@@ -33,5 +33,15 @@ public class Database {
 						+ "bastion_group_id int not null,"
 						+ "allowed_group_id int not null,"
 						+ "PRIMARY KEY (bastion_group_id, allowed_group_id));");
+
+		db.registerMigration(4, false,
+				"CREATE TABLE IF NOT EXISTS `bastion_log` ("
+						+ "id INT NOT NULL AUTO_INCREMENT,"
+						+ "group_id INT NOT NULL,"
+						+ "x INT NOT NULL,"
+						+ "y INT NOT NULL,"
+						+ "z INT NOT NULL,"
+						+ "time TIMESTAMP,"
+						+ "PRIMARY KEY (id));");
 	}
 }

@@ -39,7 +39,7 @@
      <dependency>
      	<groupId>org.spigotmc</groupId>
         <artifactId>spigot</artifactId>
-        <version>1.12-R0.1-SNAPSHOT</version>
+        <version>1.12.2-R0.1-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>
     <dependency>
@@ -65,6 +65,12 @@
     	<artifactId>CivModCore</artifactId>
     	<version>1.6.0</version>
     	<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
     </dependency>
   </dependencies>
   

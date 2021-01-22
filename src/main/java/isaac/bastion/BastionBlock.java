@@ -473,7 +473,7 @@ public class BastionBlock implements QTBox, Comparable<BastionBlock> {
 			worldText = String.format("%s ", this.location.getWorld().getName());
 		}
 
-		return String.format("[%s%d %d %d]", worldText, this.location.getBlockX(), this.location.getBlockY(), this.location.getBlockZ());
+		return String.format("[%d %d %d]", this.location.getBlockX(), this.location.getBlockY(), this.location.getBlockZ());
 	}
 
 	private String getGroupName() {
@@ -557,6 +557,7 @@ public class BastionBlock implements QTBox, Comparable<BastionBlock> {
 	 * removes Bastion from database and destroys the block at the location
 	 */
 	public void destroy() {
+		Bastion.getBastionLog().logDestroyAsync(this);
 		if (type.isDestroyOnRemove()) {
 			location.getBlock().setType(Material.AIR);
 			Bastion.getBastionStorage().deleteBastion(this);

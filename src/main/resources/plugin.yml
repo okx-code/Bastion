@@ -49,6 +49,10 @@ commands:
       description: List allowed groups in bastion group
       usage: /bsgl <bastion group>
       permission: Bastion.normal
+   bdl:
+      description: List recently deleted bastions
+      usage: /bdl
+      permission: Bastion.normal
 permissions:
     Bastion.*:
         description: Gives access to all Bastion commands
