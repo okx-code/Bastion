@@ -36,7 +36,7 @@ public class JoinNotifyDeleteListener implements Listener {
 					.map(GroupManager::getGroup)
 					.mapToInt(Group::getGroupId)
 					.toArray();
-			Optional<Log> optLog = Bastion.getBastionLog().getLog(groups).stream()
+			Optional<Log> optLog = Bastion.getBastionLog().getLog(player.getWorld().getName(), groups).stream()
 					.filter(log -> log.getTime().toInstant(ZoneOffset.UTC).toEpochMilli() > lastNotify.getOrDefault(player.getUniqueId(), 0L))
 					.reduce((a, b) -> a.getTime().compareTo(b.getTime()) >= 0 ? a : b);
 			if (!optLog.isPresent()) {

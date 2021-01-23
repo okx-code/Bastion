@@ -6,28 +6,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.event.player.PlayerJoinEvent;
-import vg.civcraft.mc.citadel.Citadel;
-import vg.civcraft.mc.citadel.reinforcement.PlayerReinforcement;
-import vg.civcraft.mc.citadel.reinforcement.Reinforcement;
 import vg.civcraft.mc.civmodcore.dao.ManagedDatasource;
 
 public class BastionLogStorage {
 
-	private static final String INSERT = "INSERT INTO bastion_log (group_id, x, y, z) VALUES (?, ?, ?, ?)";
-	private static final String SELECT = "SELECT * FROM bastion_log where group_id IN (%s) AND time >= NOW() - INTERVAL 24 HOUR ORDER BY id ASC";
+	private static final String INSERT = "INSERT INTO bastion_log (group_id, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
+	private static final String SELECT = "SELECT * FROM bastion_log where AND world = ? group_id IN (%s) AND time >= NOW() - INTERVAL 24 HOUR ORDER BY id ASC";
 
 	private final ManagedDatasource source;
 	private final Logger logger;
@@ -46,9 +37,10 @@ public class BastionLogStorage {
 				PreparedStatement statement = connection.prepareStatement(INSERT);
 
 				statement.setInt(1, group);
-				statement.setInt(2, location.getBlockX());
-				statement.setInt(3, location.getBlockY());
-				statement.setInt(4, location.getBlockZ());
+				statement.setString(2, location.getWorld().getName());
+				statement.setInt(3, location.getBlockX());
+				statement.setInt(4, location.getBlockY());
+				statement.setInt(5, location.getBlockZ());
 
 				statement.executeUpdate();
 				logger.info("Bastion destroyed @ " + location);
@@ -58,7 +50,7 @@ public class BastionLogStorage {
 		});
 	}
 
-	public List<Log> getLog(int[] groups) {
+	public List<Log> getLog(String world, int[] groups) {
 		try (Connection connect = source.getConnection()) {
 			StringBuilder format = new StringBuilder(groups.length * 2);
 			for (int i = 0; i < groups.length; i++) {
@@ -70,8 +62,9 @@ public class BastionLogStorage {
 			PreparedStatement statement = connect
 					.prepareStatement(String.format(SELECT, format.toString()));
 
+			statement.setString(1, world);
 			for (int i = 0; i < groups.length; i++) {
-				statement.setInt(i + 1, groups[i]);
+				statement.setInt(i + 2, groups[i]);
 			}
 
 			ResultSet results = statement.executeQuery();

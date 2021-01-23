@@ -38,6 +38,7 @@ public class Database {
 				"CREATE TABLE IF NOT EXISTS `bastion_log` ("
 						+ "id INT NOT NULL AUTO_INCREMENT,"
 						+ "group_id INT NOT NULL,"
+						+ "world VARCHAR(40) NOT NULL"
 						+ "x INT NOT NULL,"
 						+ "y INT NOT NULL,"
 						+ "z INT NOT NULL,"

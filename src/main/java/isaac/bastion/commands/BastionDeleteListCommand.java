@@ -39,7 +39,7 @@ public class BastionDeleteListCommand implements CommandExecutor {
 					.map(GroupManager::getGroup)
 					.mapToInt(Group::getGroupId)
 					.toArray();
-			List<Log> logs = Bastion.getBastionLog().getLog(groups);
+			List<Log> logs = Bastion.getBastionLog().getLog(player.getWorld().getName(), groups);
 			for (Log log : logs) {
 				Group group = GroupManager.getGroup(log.getGroupId());
 				player.sendMessage(group.getName() + ": (" + log.getX() + " " + log.getY() + " " + log.getZ() + ") " + ChronoUnit.HOURS.between(log.getTime(), LocalDateTime.now()) + " hours ago");
